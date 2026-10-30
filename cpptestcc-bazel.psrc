@@ -1,0 +1,42 @@
+# Configuration file for Parasoft C/C++test instrumentation engine (cpptestcc).
+# For complete list of options, see the Parasoft C/C++test documentation or run:
+# > cpptestcc -help
+
+# To use with Bazel build:
+# 
+# 1. Define 'cpptestcc-bazel-psrc' file group in your BUILD.bazel file:
+#    filegroup(name = "cpptestcc-bazel-psrc", srcs = ["cpptestcc-bazel.psrc"])
+#
+# 2. Use 'cpptestcc-bazel-psrc' when executing @cpptest//:coverage rule:
+#    --@cpptest//:psrc_file=//:cpptestcc-bazel-psrc
+#    Hint: use '.bazelrc' file to configure @cpptest//:coverage rule.
+
+# Configure C/C++test compiler identifier
+cpptestcc.compiler gcc_10-64
+
+# Configure coverage type(s)
+cpptestcc.line_coverage true
+cpptestcc.function_coverage true
+cpptestcc.statement_coverage true
+cpptestcc.block_coverage true
+cpptestcc.decision_coverage true
+cpptestcc.simpleConditionCoverage true
+cpptestcc.mcdcCoverage true
+cpptestcc.callCoverage true
+
+# Configure scope of coverage analysis
+cpptestcc.exclude regex:*
+cpptestcc.include regex:*/_main/*
+cpptestcc.exclude regex:*/_main/external/*
+cpptestcc.ignore regex:*_test.cpp
+
+# Configure advanced options
+# cpptestcc.workspace <WORKSPACE_PATH>
+# cpptestcc.coverageDataVariants true
+# cpptestcc.coverageEarlyInit true
+# cpptestcc.coverageAutoFinalization true
+# cpptestcc.optimizedCoverageCorruptionDetection true
+# cpptestcc.disableAutoRecoveryMode true
+# cpptestcc.templateCoverage true
+# cpptestcc.constexprCoverage true
+# cpptestcc.ignoreConstDecisions true

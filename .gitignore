@@ -1,0 +1,6 @@
+/bazel-*
+.build/
+.coverage/
+.cpptest/
+cpptest_results.clog
+gtest.xml

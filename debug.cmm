@@ -1,0 +1,37 @@
+;===========================================
+; This is a template of a t32 PRACTICE
+; script. It uses  following variables:
+; CORTEXA32
+
+;===========================================
+; initialize and start the debugger
+
+screen.always
+RESET
+SYStEM.CPU CORTEXA32
+SYStEM.Up
+
+;===========================================
+; Load the test executable
+DATA.LOAD.Elf ".build/goo_test"
+
+;===========================================
+; Initialize fdx structures on target/sim 
+GO cpptestInitializeStream
+
+;===========================================
+; Initialize the FDX communication
+FDX.DISable
+FDX.METHOD BUFFERE
+
+FDX.OutChannel CoverageSendChannel
+FDX.write CoverageSendChannel "/home/mirek/parasoft/cpptest_ct_2026_2/examples/CovGoogleTest/.build/cpptest_results.clog" 2.
+FDX.EnableChannel CoverageSendChannel 
+
+FDX.OutChannel TestsSendChannel
+FDX.write TestsSendChannel "/home/mirek/parasoft/cpptest_ct_2026_2/examples/CovGoogleTest/.build/gtest_results.xml" 1.
+FDX.EnableChannel TestsSendChannel 
+
+;===========================================
+; Set breakpoints
+B.S _exit

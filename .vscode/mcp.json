@@ -1,0 +1,12 @@
+{
+	"servers": {
+		"cpptest-mcp": {
+			"type": "stdio",
+			"command": "cpptestct",
+			"args": [
+				"mcp"
+			]
+		}
+	},
+	"inputs": []
+}

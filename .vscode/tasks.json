@@ -1,0 +1,37 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake -DCPPTEST_COVERAGE=ON -DCMAKE_TOOLCHAIN_FILE=$PWD/arm-none-eabi-toolchain.cmake -S . -B .build",
+            "group": "build"
+        },
+        {
+            "label": "CMake: Build and Run",
+            "type": "shell",
+            "command": "bash -c 'cmake --build .build && cd .build && rm -rf cpptest-coverage/*/*.clog && rm -rf gtest-report && ctest || true && make cpptestcov-compute cpptestcov-suppress cpptestcov-report'",
+            "group": "build"
+        },
+        {
+            "label": "CMake: Update Coverage",
+            "type": "shell",
+            "command": "bash -c 'cd .build; make cpptestcov-suppress cpptestcov-report'",
+            "group": "build"
+        },
+        {
+            "label": "Bazel: Build and Run",
+            "type": "shell",
+            "command": "bash -c 'bazel run --config=cpptest_coverage; rm -rf cpptest_results.clog; bazel-bin/goo_test.elf --gtest_output=xml:gtest.xml; cpptestcov compute -map .cpptest -clog cpptest_results.clog -out .coverage; cpptestcov index .coverage;cpptestcov suppress .coverage; cpptestcov report text .coverage'",
+            "group": "build"
+        },
+        {
+            "label": "Bazel: Update Coverage",
+            "type": "shell",
+            "command": "bash -c 'cpptestcov suppress .coverage; cpptestcov index .coverage; cpptestcov report text .coverage'",
+            "group": "build"
+        },
+    ]
+}
