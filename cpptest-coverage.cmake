@@ -164,6 +164,12 @@ function (cpptest_enable_coverage)
     &&
     ${CPPTEST_HOME_DIR}/bin/cpptestcov report mcdc
         "${CPPTEST_SOURCE_DIR}/.coverage"
+    &&
+    ${CPPTEST_HOME_DIR}/bin/cpptestcov report xtest 
+        -coverage=LC
+        -out .report/unit_test
+        .build/gtest_results.xml
+        "${CPPTEST_SOURCE_DIR}/.coverage"
   )
 
   # Apply coverage suppressions to existing coverage data files
