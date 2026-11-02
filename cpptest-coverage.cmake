@@ -153,8 +153,8 @@ function (cpptest_enable_coverage)
     ${CPPTEST_HOME_DIR}/bin/cpptestcov report html
         -root ${CPPTEST_SOURCE_DIR}
         -coverage ${CPPTEST_COVERAGE_TYPE_REPORT}
-        --single-page
-        -out "${CPPTEST_SOURCE_DIR}/.coverage/coverage.html"
+        -code
+        -out "${CPPTEST_SOURCE_DIR}/.report/coverage.html"
         "${CPPTEST_SOURCE_DIR}/.coverage"
     &&
     ${CPPTEST_HOME_DIR}/bin/cpptestcov report text

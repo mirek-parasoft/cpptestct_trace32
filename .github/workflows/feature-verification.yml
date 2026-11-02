@@ -1,0 +1,96 @@
+name: Feature Verification
+
+on:
+  pull_request:
+    branches: [ master, main ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  BUILD_ID: build_3
+  LINE_COV_GATE: 100
+  MCDC_COV_GATE: 90
+  
+jobs:
+  build:
+    runs-on: self-hosted
+    continue-on-error: true
+     # Specifies required permissions for upload-sarif action
+    permissions:
+      # required for all workflows
+      security-events: write
+      # only required for workflows in private repositories
+      actions: write
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create Build Environment
+      # Some projects don't allow in-source building, so create a separate build directory
+      # We'll use this as our working directory for all subsequent commands
+      run: cmake -E make_directory ${{github.workspace}}/.build
+
+    - name: Set build id
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: echo "build_id=build-$(date +'%Y-%m-%d-%H-%M')" >> $GITHUB_ENV 
+
+    - name: Echo build id
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: echo "The new build id is ${{ env.build_id }}"
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: cmake -DCPPTEST_COVERAGE=ON -B.build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_TOOLCHAIN_FILE=$PWD/arm-none-eabi-toolchain.cmake
+
+    - name: Build 
+      working-directory: ${{github.workspace}}
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cmake --build .build -- VERBOSE=ON
+
+    - name: Coverage Logs Cleanup
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cd .build && rm -rf cpptest-coverage/CovGoogleTest/CovGoogleTest.clog && rm -rf gtest_results.xml
+
+    - name: Run Unit Tests
+      working-directory: ${{github.workspace}}/.build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: ctest || true
+
+    - name: Generate Coverage Reports
+      working-directory: ${{github.workspace}}/.build
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: make cpptestcov-compute cpptestcov-suppress cpptestcov-report
+
+    - name: Rename Coverage Report
+      working-directory: ${{github.workspace}}
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: ls -la
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        # Upload entire report directory
+        path: ${{github.workspace}}/.report/
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
+
+    - name: Archive coverage
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: CpptestCoverage
+        path: ${{github.workspace}}/.coverage/
