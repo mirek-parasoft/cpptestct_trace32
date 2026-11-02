@@ -55,7 +55,7 @@ jobs:
       run: cmake --build .build -- VERBOSE=ON
 
     - name: Coverage Logs Cleanup
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/.build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cd .build && rm -rf cpptest-coverage/CovGoogleTest/CovGoogleTest.clog && rm -rf gtest_results.xml
