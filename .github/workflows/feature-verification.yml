@@ -100,5 +100,11 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: NUMBER=$(cpptestcov query -type percentage -coverage LC .coverage) && if [ $NUMBER -lt $LINE_COV_GATE ]; then echo "Line coverage quality gate failed"; echo "Expected result $LINE_COV_GATE%, echieved $NUMBER%"; echo "Check html report https://mirek-parasoft.github.io/cpptestct_trace32/coverage.html for details"; true; fi
+
+    - name: Check MC/DC Coverage Gate
+      working-directory: ${{github.workspace}}
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: NUMBER=$(cpptestcov query -type percentage -coverage MCDC .coverage) && if [ $NUMBER -lt $MCDC_COV_GATE ]; then echo "MC/DC coverage quality gate failed"; echo "Expected result $MCDC_COV_GATE%, echieved $NUMBER%"; echo "Check html report https://mirek-parasoft.github.io/cpptestct_trace32/coverage.html for details"; true; fi
       
     
