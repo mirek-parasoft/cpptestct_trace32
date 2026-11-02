@@ -72,7 +72,7 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: make cpptestcov-compute cpptestcov-suppress cpptestcov-report
 
-    - name: Rename Coverage Report
+    - name: Publish Coverage Report
       working-directory: ${{github.workspace}}
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
@@ -84,6 +84,7 @@ jobs:
       with:
         # Upload entire report directory
         path: ${{github.workspace}}/.report/
+        
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
