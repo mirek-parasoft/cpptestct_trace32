@@ -75,7 +75,7 @@ jobs:
     - name: Publish Coverage Report
       working-directory: ${{github.workspace}}
       shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      
       run: ls -la
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -84,7 +84,6 @@ jobs:
       with:
         # Upload entire report directory
         path: ${{github.workspace}}/.report/
-        
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
