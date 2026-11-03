@@ -35,3 +35,14 @@ googletest_replace(googletest/src/gtest.cc
 googletest_replace(googlemock/include/gmock/gmock-spec-builders.h
   "return lhs.expectation_base_.get() < rhs.expectation_base_.get();"
   "return lhs.expectation_base_.owner_before(rhs.expectation_base_);")
+
+# MISRAC2012-DIR_4_1-b: validate the nullable suite lookup before dereferencing.
+googletest_replace(googletest/src/gtest.cc
+  [=[    const TestSuite& test_suite = *unit_test.GetTestSuite(i);
+    if (!test_suite.should_run()) {]=]
+  [=[    const TestSuite* const suite = unit_test.GetTestSuite(i);
+    if (suite == nullptr) {
+      continue;
+    }
+    const TestSuite& test_suite = *suite;
+    if (!test_suite.should_run()) {]=])
