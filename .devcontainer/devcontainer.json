@@ -1,5 +1,8 @@
 {
     "image": "cpptest_t32:latest",
     "runArgs": [ "--rm" ],
-    "mounts": ["type=bind,src=${localEnv:HOME}/.ssh,dst=/home/parasoft/.ssh"],
+    "mounts": [
+        "type=bind,src=${localEnv:HOME}/.ssh,dst=/home/parasoft/.ssh",
+        "type=bind,src=${localEnv:HOME}/.codex,dst=/home/parasoft/.codex"
+    ],
 }
