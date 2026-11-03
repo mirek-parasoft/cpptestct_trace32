@@ -8,10 +8,10 @@ set -euo pipefail
 # == Codex ==
 
 # Register C/C++test MCP server - assuming C/C++test is installed in '/opt/parasoft/cpptest' location, adjust as needed
-# codex mcp add cpptest-std-mcp -- /opt/parasoft/cpptest/integration/mcp/cpptestmcp
+codex mcp add cpptest-std-mcp -- /opt/parasoft/cpptest/integration/mcp/cpptestmcp
 
 # Execute the prompt with Codex - be sure to adjust sandbox permissions as needed for your prompt
-# codex exec -s danger-full-access --config allow_login_shell=false "$(cat "$(dirname "$0")/cpptest-agent-prompt.md")"
+codex exec -s danger-full-access --config allow_login_shell=false "$(cat "$(dirname "$0")/cpptest-agent-prompt.md")"
 
 # == Copilot ==
 
