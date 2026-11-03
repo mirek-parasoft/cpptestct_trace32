@@ -46,3 +46,11 @@ googletest_replace(googletest/src/gtest.cc
     }
     const TestSuite& test_suite = *suite;
     if (!test_suite.should_run()) {]=])
+
+# MISRAC2012-DIR_4_1-i: emit the CDATA segment without pointer subtraction.
+googletest_replace(googletest/src/gtest.cc
+  [=[      stream->write(segment,
+                    static_cast<std::streamsize>(next_segment - segment));]=]
+  [=[      for (; segment != next_segment; ++segment) {
+        stream->put(*segment);
+      }]=])
