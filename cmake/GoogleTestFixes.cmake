@@ -54,3 +54,8 @@ googletest_replace(googletest/src/gtest.cc
   [=[      for (; segment != next_segment; ++segment) {
         stream->put(*segment);
       }]=])
+
+# MISRAC2012-DIR_4_1-c: invalid shard counts cannot select a test.
+googletest_replace(googletest/src/gtest.cc
+  "  return (test_id % total_shards) == shard_index;"
+  "  return total_shards > 0 && (test_id % total_shards) == shard_index;")
