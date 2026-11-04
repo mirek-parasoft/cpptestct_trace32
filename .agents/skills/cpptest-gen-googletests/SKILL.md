@@ -83,3 +83,9 @@ Use `query_mcdc_coverage` MCP tool to read MC/DC coverage results after executin
 ### Step 6: Commit all generated GoogleTest unit test cases (Conditional)
 
 This step should only be performed if any test cases were generated AND if **commit_tests** (from Step 1) is `true`. If **commit_tests** is `false`, skip this step and report to the output that the commit was skipped for the current rule.
+
+Commit changes to the repository using `git commit` command. Be sure to follow the commit message guidelines below to ensure consistency and clarity in the commit history. **Do not** use any other committer e-mail, name, or commit message format, as this may lead to confusion and inefficient workflow:
+- **Always** use 'autofix@demo' as committer e-mail.
+- **Always** use 'Autofix' as committer name.
+- Use verbose commit message - include information about the final result for MC/DC coverage.
+- The first line of the commit message must be exactly "New auto generated test cases: <number of generated test cases>, followed by a blank line. The subsequent lines should provide detailed information about the final MC/DC coverage results and any additional context relevant to the generated tests.
