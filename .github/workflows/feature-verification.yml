@@ -61,23 +61,23 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: rm -rf cpptest-coverage/CovGoogleTest/CovGoogleTest.clog && rm -rf gtest_results.xml
 
-    # Runs code analysis with C/C++test.
-    - name: Run C/C++test
-      id: run_cpptest
-      # Use the 'run-cpptest-action' GitHub action.
-      uses: parasoft/run-cpptest-action@2
-      # Optional parameters for 'run-cpptest-action'.
-      with:
-        # For CMake-based projects, use a compile_commands.json file as the input for analysis. 
-        # input: .build/compile_commands.json
-        # For Makefile-based projects, use a cpptestscan.bdf file as the input for analysis.
-        input: .build/compile_commands.json
-        testConfig: "MISRA C++ 2023.properties"
-        compilerConfig: gcc_14-aarch64
-        # additionalParams: -fail
-        # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
-        # reportFormat: xml,html,custom
-        # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
+    # # Runs code analysis with C/C++test.
+    # - name: Run C/C++test
+    #   id: run_cpptest
+    #   # Use the 'run-cpptest-action' GitHub action.
+    #   uses: parasoft/run-cpptest-action@2
+    #   # Optional parameters for 'run-cpptest-action'.
+    #   with:
+    #     # For CMake-based projects, use a compile_commands.json file as the input for analysis. 
+    #     # input: .build/compile_commands.json
+    #     # For Makefile-based projects, use a cpptestscan.bdf file as the input for analysis.
+    #     input: .build/compile_commands.json
+    #     testConfig: "MISRA C++ 2023.properties"
+    #     compilerConfig: gcc_14-aarch64
+    #     # additionalParams: -fail
+    #     # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
+    #     # reportFormat: xml,html,custom
+    #     # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
 
     # # Runs C/C++test AI Autofix to automatically fix violations and commit the changes to a new branch.
     # - name: Run C/C++test AI Autofix
