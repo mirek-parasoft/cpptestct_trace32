@@ -100,10 +100,10 @@ jobs:
         # Set-up autofix branch
         DATE=$(date +'%Y%m%d-%H%M%S')
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-sa-${{ github.event.pull_request.number }}/$DATE"
+          BRANCH_NAME="autofix/pr-static-analysis-${{ github.event.pull_request.number }}/$DATE"
           ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
         else
-          BRANCH_NAME="autofix/${{ github.ref_name }}/$DATE"
+          BRANCH_NAME="autofix/static-analysis-${{ github.ref_name }}/$DATE"
           ORIGINAL_BRANCH="${{ github.ref_name }}"
         fi
         git checkout -b "$BRANCH_NAME"
@@ -161,10 +161,10 @@ jobs:
         # Set-up autofix branch
         DATE=$(date +'%Y%m%d-%H%M%S')
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-ut-${{ github.event.pull_request.number }}/$DATE"
+          BRANCH_NAME="autofix/pr-unit-tests-${{ github.event.pull_request.number }}/$DATE"
           ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
         else
-          BRANCH_NAME="autofix/${{ github.ref_name }}/$DATE"
+          BRANCH_NAME="autofix/unit-tests-${{ github.ref_name }}/$DATE"
           ORIGINAL_BRANCH="${{ github.ref_name }}"
         fi
         git checkout -b "$BRANCH_NAME"
