@@ -62,6 +62,22 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: rm -rf cpptest-coverage/CovGoogleTest/CovGoogleTest.clog && rm -rf gtest_results.xml
 
+    - name: Prepare shared C/C++test improvement branch
+      id: prepare_cpptest_improvements
+      shell: bash
+      env:
+        ORIGINAL_BRANCH: ${{ github.head_ref || github.ref_name }}
+      run: |
+        set -euo pipefail
+
+        BRANCH_NAME="autofix/$ORIGINAL_BRANCH/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+        ORIGINAL_SHA=$(git rev-parse HEAD)
+        git checkout -b "$BRANCH_NAME"
+
+        echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+        echo "original_branch=$ORIGINAL_BRANCH" >> "$GITHUB_OUTPUT"
+        echo "original_sha=$ORIGINAL_SHA" >> "$GITHUB_OUTPUT"
+
     # Runs code analysis with C/C++test.
     - name: Run C/C++test
       id: run_cpptest
@@ -80,10 +96,10 @@ jobs:
         # reportFormat: xml,html,custom
         # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
 
-    # Runs C/C++test AI Autofix to automatically fix violations and commit the changes to a new branch.
+    # Both AI steps commit to the shared improvement branch.
     - name: Run C/C++test AI Autofix
       id: run_cpptest_autofix
-      if: always() && steps.run_cpptest.outcome == 'failure'
+      if: always() && steps.prepare_cpptest_improvements.outcome == 'success' && steps.run_cpptest.outcome == 'failure'
       env:
         CPPTEST_COMMIT_FIXES: 1
         WORKFLOWS_DIR: ${{ github.workspace }}/.github/workflows
@@ -98,35 +114,8 @@ jobs:
           exit 0
         fi
 
-        # Set-up autofix branch
-        DATE=$(date +'%Y%m%d-%H%M%S')
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-static-analysis-${{ github.event.pull_request.number }}/$DATE"
-          ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
-        else
-          BRANCH_NAME="autofix/static-analysis-${{ github.ref_name }}/$DATE"
-          ORIGINAL_BRANCH="${{ github.ref_name }}"
-        fi
-        git checkout -b "$BRANCH_NAME"
-
-        ORIGINAL_SHA=$(git rev-parse HEAD)
-
         # Run AI Agent to fix violations and commit changes
         "$WORKFLOWS_DIR/cpptest-agent-run.sh"
-
-        # Only push and comment if there are new commits
-        if [ "$(git rev-parse HEAD)" != "$ORIGINAL_SHA" ]; then
-          git push -u origin HEAD
-          export GH_TOKEN="${{ github.token }}"
-          BRANCH_URL="${{ github.server_url }}/${{ github.repository }}/tree/$BRANCH_NAME"
-          PR_URL=$(gh pr create --head "$BRANCH_NAME" --base "$ORIGINAL_BRANCH" --title "Autofix: $BRANCH_NAME" --body "Automated C/C++test AI Autofix changes")
-          COMMENT=$(printf 'C/C++test found violations and opened an AI Autofix PR. Please review the changes and merge or cherry-pick as needed.\nBranch: %s\nAutofix PR: %s' "$BRANCH_URL" "$PR_URL")
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT"
-          else
-            echo "$COMMENT"
-          fi
-        fi
 
     - name: Run Unit Tests
       if: always() && steps.build.outcome == 'success'
@@ -145,7 +134,7 @@ jobs:
 
     # Runs C/C++test AI test generation to automatically ensure high MC/DC coverage
     - name: Run C/C++test AI Tests Generation
-      if: always() && steps.build.outcome == 'success'
+      if: always() && steps.prepare_cpptest_improvements.outcome == 'success' && steps.build.outcome == 'success'
       id: run_cpptest_tests_gen
       env:
         CPPTEST_COMMIT_TESTS: true
@@ -154,42 +143,39 @@ jobs:
       run: |
         set -euo pipefail
 
-        # Note: this requires "-fail" to be passed to run-cpptest-action,
-        # and the "exitCode" output is available since version 2.0.3 of the action.
         mcdc_res=$(cpptestcov query -type percentage -coverage MCDC .coverage)
         if [ "$mcdc_res" -eq 100 ]; then
           echo "C/C++test already has 100% MC/DC coverage. No need to generate additional tests."
           exit 0
         fi
 
-        # Set-up autofix branch
-        DATE=$(date +'%Y%m%d-%H%M%S')
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-unit-tests-${{ github.event.pull_request.number }}/$DATE"
-          ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
-        else
-          BRANCH_NAME="autofix/unit-tests-${{ github.ref_name }}/$DATE"
-          ORIGINAL_BRANCH="${{ github.ref_name }}"
-        fi
-        git checkout -b "$BRANCH_NAME"
-
-        ORIGINAL_SHA=$(git rev-parse HEAD)
-
         # Run AI Agent to generate additional tests for uncovered MC/DC conditions
         "$WORKFLOWS_DIR/cpptest-agent-run-gen.sh"
 
-        # Only push and comment if there are new commits
+    - name: Open combined C/C++test improvement pull request
+      if: always() && steps.prepare_cpptest_improvements.outcome == 'success'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        BRANCH_NAME: ${{ steps.prepare_cpptest_improvements.outputs.branch_name }}
+        ORIGINAL_BRANCH: ${{ steps.prepare_cpptest_improvements.outputs.original_branch }}
+        ORIGINAL_SHA: ${{ steps.prepare_cpptest_improvements.outputs.original_sha }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        set -euo pipefail
+
         if [ "$(git rev-parse HEAD)" != "$ORIGINAL_SHA" ]; then
-          git push -u origin HEAD
-          export GH_TOKEN="${{ github.token }}"
-          BRANCH_URL="${{ github.server_url }}/${{ github.repository }}/tree/$BRANCH_NAME"
-          PR_URL=$(gh pr create --head "$BRANCH_NAME" --base "$ORIGINAL_BRANCH" --title "Autofix: $BRANCH_NAME" --body "Automated C/C++test AI Autofix changes")
-          COMMENT=$(printf 'C/C++test generated new GoogleTest tests and opened an AI Autofix PR. Please review the changes and merge.\nBranch: %s\nAutofix PR: %s' "$BRANCH_URL" "$PR_URL")
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT"
+          git push -u origin "HEAD:refs/heads/$BRANCH_NAME"
+          BRANCH_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/tree/$BRANCH_NAME"
+          PR_URL=$(gh pr create --head "$BRANCH_NAME" --base "$ORIGINAL_BRANCH" --title "C/C++test AI improvements: $ORIGINAL_BRANCH" --body "Automated C/C++test static-analysis fixes and/or GoogleTest coverage improvements.")
+          COMMENT=$(printf 'C/C++test opened one PR containing the committed AI Autofix and test-generation changes. Please review the changes and merge as appropriate.\nBranch: %s\nImprovement PR: %s' "$BRANCH_URL" "$PR_URL")
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            gh pr comment "$PR_NUMBER" --body "$COMMENT"
           else
             echo "$COMMENT"
           fi
+        else
+          echo "No C/C++test improvement commits were created. No pull request needed."
         fi
    
     - name: Setup Pages
