@@ -74,7 +74,7 @@ jobs:
         input: .build/compile_commands.json
         testConfig: "MISRA C++ 2023.properties"
         compilerConfig: gcc_14-aarch64
-        additionalParams: -exclude */syscalls.cpp -exclude */comm-plugin/* -exclude */google*/* -exclude *_test.cpp
+        additionalParams: -fail -exclude */syscalls.cpp -exclude */comm-plugin/* -exclude */google*/* -exclude *_test.cpp
         # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
         # reportFormat: xml,html,custom
         # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
