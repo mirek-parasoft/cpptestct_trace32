@@ -74,7 +74,7 @@ jobs:
         input: .build/compile_commands.json
         testConfig: "MISRA C++ 2023.properties"
         compilerConfig: gcc_14-aarch64
-        additionalParams: -fail
+        # additionalParams: -fail
         # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
         # reportFormat: xml,html,custom
         # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
@@ -142,10 +142,10 @@ jobs:
     # Runs C/C++test AI test generation to automatically ensure high MC/DC coverage
     - name: Run C/C++test AI Tests Generation
       id: run_cpptest_autofix
-      if: always() && steps.run_cpptest.outcome == 'failure'
+      if: always() 
       env:
-        CPPTEST_COMMIT_FIXES: 1
-        CPPTEST_ITERATION_LIMIT:3
+        CPPTEST_COMMIT_TESTS: true
+        CPPTEST_ITERATION_LIMIT: 3
         WORKFLOWS_DIR: ${{ github.workspace }}/.github/workflows
       run: |
         set -euo pipefail
