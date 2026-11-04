@@ -1,0 +1,1 @@
+Use `cpptest-gen-googletests` skill to generate addtional GoogleTest unit test cases to ensure 100% MC/DC coverage

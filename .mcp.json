@@ -1,0 +1,9 @@
+{
+	"mcpServers": {
+		"cpptest-ct-cov": {
+			"type": "stdio",
+			"command": "/opt/parasoft/cpptest-ct/integration/mcp/cpptestmcp",
+			"args": []
+		}
+	}
+}
