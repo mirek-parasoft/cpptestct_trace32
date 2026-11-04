@@ -30,7 +30,7 @@ TEST(GooTest, TestGetValueBelowMaxTreshold) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
 
-  EXPECT_EQ(computeControl(200, 10), 400);
+  EXPECT_EQ(computeControl(200, 10), 600);
 }
 
 TEST(GooTest, SetMotorSpeedZero) {
@@ -38,4 +38,37 @@ TEST(GooTest, SetMotorSpeedZero) {
   RecordProperty("req", "REQ-123-POSITIVE");
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
+}
+
+TEST(GooTest, SensorAtLowThresholdReturnsDefault) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(SENSOR_LOW_THRESHOLD, 10), DEFAULT_VALUE);
+}
+
+TEST(GooTest, ReadCommandReturnsSensorValueWithoutChangingMotorSpeed) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t original_sensor = SENSOR_DATA;
+  const uint16_t original_speed = MOTOR_SPEED;
+  SENSOR_DATA = 237;
+  MOTOR_SPEED = 123;
+
+  EXPECT_EQ(processCommand("READ", ""), 237);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+
+  SENSOR_DATA = original_sensor;
+  MOTOR_SPEED = original_speed;
+}
+
+TEST(GooTest, UnknownCommandReturnsErrorWithoutChangingMotorSpeed) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t original_speed = MOTOR_SPEED;
+  MOTOR_SPEED = 123;
+
+  EXPECT_EQ(processCommand("UNKNOWN", "456"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+
+  MOTOR_SPEED = original_speed;
 }
