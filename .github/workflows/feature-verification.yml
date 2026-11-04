@@ -141,7 +141,7 @@ jobs:
 
     # Runs C/C++test AI test generation to automatically ensure high MC/DC coverage
     - name: Run C/C++test AI Tests Generation
-      id: run_cpptest_autofix
+      id: run_cpptest_test_gen
       if: always() 
       env:
         CPPTEST_COMMIT_TESTS: true
