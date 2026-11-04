@@ -50,6 +50,7 @@ jobs:
       run: cmake -DCPPTEST_COVERAGE=ON -B.build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_TOOLCHAIN_FILE=$PWD/arm-none-eabi-toolchain.cmake
 
     - name: Build 
+      id: build 
       working-directory: ${{github.workspace}}
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
@@ -100,10 +101,10 @@ jobs:
         # Set-up autofix branch
         DATE=$(date +'%Y%m%d-%H%M%S')
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-sa-${{ github.event.pull_request.number }}/$DATE"
+          BRANCH_NAME="autofix/pr-static-analysis-${{ github.event.pull_request.number }}/$DATE"
           ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
         else
-          BRANCH_NAME="autofix/${{ github.ref_name }}/$DATE"
+          BRANCH_NAME="autofix/static-analysis-${{ github.ref_name }}/$DATE"
           ORIGINAL_BRANCH="${{ github.ref_name }}"
         fi
         git checkout -b "$BRANCH_NAME"
@@ -128,12 +129,15 @@ jobs:
         fi
 
     - name: Run Unit Tests
+      if: always() && steps.build.outcome == 'success'
       working-directory: ${{github.workspace}}/.build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: ctest || true
 
     - name: Generate Coverage Reports
+      id: cpptest_coverage
+      if: always() && steps.build.outcome == 'success'
       working-directory: ${{github.workspace}}/.build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
@@ -141,8 +145,8 @@ jobs:
 
     # Runs C/C++test AI test generation to automatically ensure high MC/DC coverage
     - name: Run C/C++test AI Tests Generation
+      if: always() && steps.build.outcome == 'success'
       id: run_cpptest_tests_gen
-      if: always() 
       env:
         CPPTEST_COMMIT_TESTS: true
         CPPTEST_ITERATION_LIMIT: 3
@@ -161,10 +165,10 @@ jobs:
         # Set-up autofix branch
         DATE=$(date +'%Y%m%d-%H%M%S')
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          BRANCH_NAME="autofix/pr-ut-${{ github.event.pull_request.number }}/$DATE"
+          BRANCH_NAME="autofix/pr-unit-tests-${{ github.event.pull_request.number }}/$DATE"
           ORIGINAL_BRANCH="${{ github.event.pull_request.head.ref }}"
         else
-          BRANCH_NAME="autofix/${{ github.ref_name }}/$DATE"
+          BRANCH_NAME="autofix/unit-tests-${{ github.ref_name }}/$DATE"
           ORIGINAL_BRANCH="${{ github.ref_name }}"
         fi
         git checkout -b "$BRANCH_NAME"
@@ -187,37 +191,39 @@ jobs:
             echo "$COMMENT"
           fi
         fi
-
-    - name: Publish Coverage Report
-      working-directory: ${{github.workspace}}
-      shell: bash
-      
-      run: ls -la
+   
     - name: Setup Pages
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       uses: actions/configure-pages@v4
+
     - name: Upload artifact
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       uses: actions/upload-pages-artifact@v4
       with:
         # Upload entire report directory
         path: ${{github.workspace}}/.report/
+      
     - name: Deploy to GitHub Pages
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       id: deployment
       uses: actions/deploy-pages@v4
 
     - name: Archive coverage
-      if: always()
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       uses: actions/upload-artifact@v4
       with:
         name: CpptestCoverage
         path: ${{github.workspace}}/.coverage/
 
     - name: Check Line Coverage Gate
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       working-directory: ${{github.workspace}}
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: NUMBER=$(cpptestcov query -type percentage -coverage LC .coverage) && if [ $NUMBER -lt $LINE_COV_GATE ]; then echo "Line coverage quality gate failed"; echo "Expected result $LINE_COV_GATE%, echieved $NUMBER%"; echo "Check html report https://mirek-parasoft.github.io/cpptestct_trace32/coverage.html for details"; true; fi
 
     - name: Check MC/DC Coverage Gate
+      if: always() && steps.cpptest_coverage.outcome == 'success'
       working-directory: ${{github.workspace}}
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
