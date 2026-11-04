@@ -1,3 +1,5 @@
 {
-    "cpptest.testConfiguration": "${workspaceFolder}/MISRA C++ 2023.properties"
+    "cpptest.testConfiguration": "${workspaceFolder}/MISRA C++ 2023.properties",
+    "cpptest.compilerIdentifier": "gcc_14-aarch64",
+    "cpptest.commandLinePattern": "cpptestcli ${stopFile} ${compilerConfig} ${testConfig} ${reportDir} ${selectedFiles} -module .  -exclude */syscalls.cpp -exclude */comm-plugin/* -exclude */google*/* -exclude */*_test.cpp -input .build/compile_commands.json"
 }

@@ -10,4 +10,4 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -S . -B .build
 cmake --build .build
 
 # Analyze
-cpptestcli -quiet -compiler gcc_14-aarch64 -config "./MISRA C++ 2023.properties" -module . -input .build/compile_commands.json
+cpptestcli -quiet -compiler gcc_14-aarch64 -config "./MISRA C++ 2023.properties" -module . -exclude */syscalls.cpp -exclude */comm-plugin/* -exclude */google*/* -exclude *_test.cpp -input .build/compile_commands.json

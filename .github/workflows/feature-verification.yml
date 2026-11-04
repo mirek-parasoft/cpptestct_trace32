@@ -23,6 +23,7 @@ jobs:
       actions: write
       contents: write
       pages: write
+      pull-requests: write
       id-token: write
 
     steps:
