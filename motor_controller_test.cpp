@@ -25,6 +25,10 @@ TEST(GooTest, TestValueAboveMaxTreshold) {
   EXPECT_EQ(computeControl(600, 10), 60);
 }
 
+TEST(GooTest, ZeroDivisorUsesDefaultValue) {
+  EXPECT_EQ(computeControl(600, 0), DEFAULT_VALUE);
+}
+
 // 
 TEST(GooTest, TestGetValueBelowMaxTreshold) {
   RecordProperty("cpptest_filename", __FILE__);
