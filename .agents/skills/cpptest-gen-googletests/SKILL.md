@@ -66,6 +66,8 @@ If there is 100% MC/DC code coverage reported for all tested files, finish the w
 
 Read carefully the "Tested condition values" and "Missing condition values" information from MCP tool output. Use information about "Missing condition values" to generate new GoogleTest test cases that specifically target the uncovered conditional values. Avoid generating test cases for conditional values that are already covered.
 
+Check the last commit message for the information about implemented requirements. If the commit message includes requirement association in the form of `Requirement: <requirement_id>`, use this information to annotate the generated test cases accordingly. Test cases annotation should be done by injecting the following function call at the beginning of each generated test case: `RecordProperty("req", "<requirement_id>");`. The assumption is that uncovered code is related to the implemented requirement(s). Do not analyze this information manuall, just assume it is correct. All generated test cases should include this annotation. If no requirement association is provided in the commit message, skip adding annotations to generated test cases. 
+
 ### Step 4: Execute all test cases including newly generated ones
 
 Execute the following script in the root of the project:
