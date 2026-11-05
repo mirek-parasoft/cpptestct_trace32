@@ -7,7 +7,7 @@ volatile uint16_t MOTOR_SPEED = 0;
 
 volatile uint16_t SENSOR_HIGH_THRESHOLD = 500;
 volatile uint16_t SENSOR_LOW_THRESHOLD = 100;
-volatile uint16_t DEFAULT_VALUE = 10;
+volatile uint16_t DEFAULT_VALUE = 5;
 volatile uint16_t MULTIPLIER = 3;
 
 
