@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 } 
 
 // 
-TEST(GooTest, TestValueAboveMaxTreshold) {
+TEST(BasicTests, TestValueAboveMaxTreshold) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-ZERO");
  
@@ -26,14 +26,14 @@ TEST(GooTest, TestValueAboveMaxTreshold) {
 }
 
 // 
-TEST(GooTest, TestGetValueBelowMaxTreshold) {
+TEST(BasicTests, TestGetValueBelowMaxTreshold) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
 
   EXPECT_EQ(computeControl(200, 10), 600);
 }
 
-TEST(GooTest, SetMotorSpeedZero) {
+TEST(BasicTests, SetMotorSpeedZero) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
 
