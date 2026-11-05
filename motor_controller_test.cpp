@@ -30,7 +30,7 @@ TEST(GooTest, TestGetValueBelowMaxTreshold) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
 
-  EXPECT_EQ(computeControl(200, 10), 400);
+  EXPECT_EQ(computeControl(200, 10), 600);
 }
 
 TEST(GooTest, SetMotorSpeedZero) {

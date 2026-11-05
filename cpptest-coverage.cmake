@@ -167,6 +167,7 @@ function (cpptest_enable_coverage)
     &&
     ${CPPTEST_HOME_DIR}/bin/cpptestcov report xtest 
         -coverage=LC
+        -root ${CPPTEST_SOURCE_DIR}
         -out "${CPPTEST_SOURCE_DIR}/.report/unit_test"
         "${CPPTEST_SOURCE_DIR}/.build/gtest_results.xml"
         "${CPPTEST_SOURCE_DIR}/.coverage"
