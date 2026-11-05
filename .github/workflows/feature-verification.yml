@@ -223,4 +223,7 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: NUMBER=$(cpptestcov query -type percentage -coverage MCDC .coverage) && if [ $NUMBER -lt $MCDC_COV_GATE ]; then echo "MC/DC coverage quality gate failed"; echo "Expected result $MCDC_COV_GATE%, echieved $NUMBER%"; echo "Check html report https://mirek-parasoft.github.io/cpptestct_trace32/coverage.html for details"; true; fi
       
+    - name: Print compliance report URL
+      if: always() && steps.deployment.outcome == 'success'
+      run: echo "https://mirek-parasoft.github.io/cpptestct_trace32/compliance_report.html"
     
