@@ -33,6 +33,12 @@ TEST(GooTest, TestGetValueBelowMaxTreshold) {
   EXPECT_EQ(computeControl(200, 10), 600);
 }
 
+TEST(GooTest, ZeroDivisorUsesDefaultValue) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(600, 0), DEFAULT_VALUE);
+}
+
 TEST(GooTest, SetMotorSpeedZero) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
