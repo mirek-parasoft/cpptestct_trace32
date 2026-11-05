@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C/C++test Compliance Testing report</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f2f5f7;
+      color: #172d3a;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .top-bar {
+      height: 8px;
+      background: #333;
+    }
+
+    header {
+      background: #006699;
+      border-bottom: 4px solid #004877;
+      color: #fff;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .logo {
+      display: block;
+      flex: 0 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: normal;
+      line-height: 1.2;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 32px auto;
+      padding: 0 24px 48px;
+    }
+
+    .reports {
+      overflow: hidden;
+      border: 1px solid #cbd9e0;
+      border-radius: 4px;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0, 40, 60, 0.08);
+    }
+
+    h2 {
+      margin: 0;
+      padding: 14px 20px;
+      background: #004877;
+      color: #fff;
+      font-size: 18px;
+      font-weight: normal;
+    }
+
+    .description {
+      margin: 0;
+      padding: 20px 20px 8px;
+      color: #475e6d;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 20px 20px;
+      list-style: none;
+    }
+
+    li + li {
+      margin-top: 8px;
+    }
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px 16px;
+      border: 1px solid #d5e0e5;
+      border-radius: 4px;
+      background: #f8fafb;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .link-label {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    a:link, a:visited {
+      color: #102f45;
+    }
+
+    .arrow {
+      color: #006699;
+      font-size: 20px;
+      font-weight: normal;
+      line-height: 1;
+    }
+
+    a:hover, a:focus-visible {
+      border-color: #006699;
+      background: #e9f4f8;
+      color: #0a2434;
+    }
+
+    a:focus-visible {
+      outline: 3px solid #b05000;
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px 16px;
+      }
+
+      .logo {
+        width: 160px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      main {
+        margin: 24px auto;
+        padding: 0 16px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar" aria-hidden="true"></div>
+  <header>
+    <div class="header-content">
+      <img class="logo" src="parasoft-logo.png" alt="Parasoft" width="195" height="48">
+      <h1>C/C++test Compliance Testing report</h1>
+    </div>
+  </header>
+  <main>
+    <section class="reports" aria-labelledby="reports-heading">
+      <h2 id="reports-heading">Compliance reports</h2>
+      <p class="description">Select a report to view detailed results.</p>
+      <nav aria-label="Compliance reports">
+        <ul>
+          <li>
+            <a href="report.html">
+              <span class="link-label">Static Analysis and MISRA C++ Compliance</span>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+          <li>
+            <a href="xtest/report.html">
+              <span class="link-label">Unit testing</span>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+          <li>
+            <a href="coverage.html">
+              <span class="link-label">Code Coverage</span>
+              <span class="arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>

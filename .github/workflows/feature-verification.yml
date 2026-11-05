@@ -178,19 +178,27 @@ jobs:
           echo "No C/C++test improvement commits were created. No pull request needed."
         fi
    
-    - name: Setup Pages
+    - name: Prepare compliance report front page
+      id: prepare_compliance_report
       if: always() && steps.cpptest_coverage.outcome == 'success'
+      shell: bash
+      working-directory: ${{github.workspace}}
+      run: |
+        cp -- helper/compliance_report.html helper/parasoft-logo.png .report/
+
+    - name: Setup Pages
+      if: always() && steps.prepare_compliance_report.outcome == 'success'
       uses: actions/configure-pages@v4
 
     - name: Upload artifact
-      if: always() && steps.cpptest_coverage.outcome == 'success'
+      if: always() && steps.prepare_compliance_report.outcome == 'success'
       uses: actions/upload-pages-artifact@v4
       with:
         # Upload entire report directory
         path: ${{github.workspace}}/.report/
       
     - name: Deploy to GitHub Pages
-      if: always() && steps.cpptest_coverage.outcome == 'success'
+      if: always() && steps.prepare_compliance_report.outcome == 'success'
       id: deployment
       uses: actions/deploy-pages@v4
 
