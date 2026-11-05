@@ -45,3 +45,22 @@ TEST(GooTest, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 }
+
+TEST(GooTest, SetMotorSpeedValidNumber) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("SET", "123"), 123);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST(GooTest, InvalidMotorSpeedLeavesSpeedUnchanged) {
+  RecordProperty("cpptest_filename", __FILE__);
+  setMotorSpeed(42);
+
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(processCommand("SET", "invalid"), -1);
+  EXPECT_EQ(processCommand("SET", "123x"), -1);
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999"), -1);
+  EXPECT_EQ(processCommand("SET", "-999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+}
