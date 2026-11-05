@@ -62,3 +62,42 @@ TEST(GooTest, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 }
+
+TEST(GooTest, ReadCommandReturnsSensorSample) {
+  const uint16_t original_sensor = SENSOR_DATA;
+  SENSOR_DATA = 321;
+
+  EXPECT_EQ(processCommand("READ", ""), 321);
+
+  SENSOR_DATA = original_sensor;
+}
+
+TEST(GooTest, UnknownCommandLeavesMotorUnchanged) {
+  const uint16_t original_speed = MOTOR_SPEED;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processCommand("UNKNOWN", "123"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  MOTOR_SPEED = original_speed;
+}
+
+TEST(GooTest, SpeedBelowIntMinimumLeavesMotorUnchanged) {
+  const uint16_t original_speed = MOTOR_SPEED;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processCommand("SET", "-2147483649"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  MOTOR_SPEED = original_speed;
+}
+
+TEST(GooTest, SpeedAboveIntMaximumLeavesMotorUnchanged) {
+  const uint16_t original_speed = MOTOR_SPEED;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processCommand("SET", "2147483648"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  MOTOR_SPEED = original_speed;
+}
