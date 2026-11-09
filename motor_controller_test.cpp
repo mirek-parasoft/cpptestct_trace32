@@ -55,3 +55,33 @@ TEST(BasicTests, RejectInvalidMotorSpeed) {
   EXPECT_EQ(processCommand("SET", "999999999999999999999999"), -1);
   EXPECT_EQ(MOTOR_SPEED, 123);
 }
+
+TEST(BasicTests, ControlAboveHighThresholdWithZeroDivisor) {
+  RecordProperty("req", "REQ-31-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(600, 0), 0);
+}
+
+TEST(BasicTests, ProcessorReadsSensorAtLowThresholdWithDefaultControl) {
+  RecordProperty("req", "REQ-31-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t originalSensor = SENSOR_DATA;
+  SENSOR_DATA = SENSOR_LOW_THRESHOLD;
+
+  EXPECT_EQ(processor("READ", ""),
+            static_cast<int>(SENSOR_LOW_THRESHOLD) + DEFAULT_VALUE);
+
+  SENSOR_DATA = originalSensor;
+}
+
+TEST(BasicTests, UnknownCommandIsRejectedWithoutChangingMotorSpeed) {
+  RecordProperty("req", "REQ-31-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t originalSpeed = MOTOR_SPEED;
+
+  EXPECT_EQ(processCommand("UNKNOWN", "42"), -1);
+  EXPECT_EQ(MOTOR_SPEED, originalSpeed);
+}

@@ -36,7 +36,7 @@ int computeControl(const int sensor, const int divisor)
     } else {
         return DEFAULT_VALUE;
     }
-    return value;
+    return value; // parasoft-cov-suppress LC "Unreachable: every branch of the preceding if/else returns."
 } 
 
 int processCommand(const char* const cmd, const char* const arg)
