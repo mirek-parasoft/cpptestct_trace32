@@ -81,7 +81,7 @@ This is **the only** way of building the project, executing unit tests and gener
 
 ### Step 5: Repeat workflow until both coverage goals are achieved
 
-After executing generated tests, use `query_mcdc_coverage` and `query_line_coverage` again to check all tested files. Repeat from Step 3 until both MC/DC and line coverage are 100%, or the number of attempts reaches **iteration_limit** (from Step 1). Do not stop just because one coverage type has reached 100%. If either goal cannot be achieved within the limit, report the final results and the remaining missing conditions or uncovered lines.
+After executing generated tests, use `query_mcdc_coverage` and `query_line_coverage` again to check all tested files. Repeat from Step 3 until both MC/DC and line coverage are 100%, or the number of attempts reaches **iteration_limit** (from Step 1). Do not stop just because one coverage type has reached 100%. If either goal cannot be achieved, analyze the reason. For justified cases like unreachable code or platform dependent code behaviour apply suppression. Use `how_to_suppress_coverage` to learn about suppressions. In all other cases of uncoverable code just report the final results and the remaining missing conditions or uncovered lines.
 
 ### Step 6: Commit all generated GoogleTest unit test cases (Conditional)
 
