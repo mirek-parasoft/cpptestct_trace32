@@ -59,3 +59,23 @@ TEST(BasicTests, InvalidMotorSpeedLeavesRegisterUnchanged) {
   EXPECT_EQ(processCommand("SET", "999999999999999999999999999999"), -1);
   EXPECT_EQ(MOTOR_SPEED, 42);
 }
+
+TEST(BasicTests, ProcessorReadsSensorAndAddsDefaultControlAtLowThreshold) {
+  const uint16_t saved_sensor = SENSOR_DATA;
+  SENSOR_DATA = SENSOR_LOW_THRESHOLD;
+
+  EXPECT_EQ(processor("READ", ""),
+            static_cast<int>(SENSOR_LOW_THRESHOLD) + DEFAULT_VALUE);
+
+  SENSOR_DATA = saved_sensor;
+}
+
+TEST(BasicTests, UnknownCommandLeavesMotorSpeedUnchanged) {
+  const uint16_t saved_speed = MOTOR_SPEED;
+  setMotorSpeed(42);
+
+  EXPECT_EQ(processCommand("UNKNOWN", "123"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  setMotorSpeed(saved_speed);
+}
