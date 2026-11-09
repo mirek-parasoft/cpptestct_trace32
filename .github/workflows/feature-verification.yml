@@ -73,6 +73,7 @@ jobs:
 
         rm -f -- current_requirement.txt
         COMMIT_MESSAGE=$(git log -1 --format=%B)
+        echo "Commit message: $COMMIT_MESSAGE"
         if [[ "$COMMIT_MESSAGE" =~ ^Requirement:[[:blank:]]+([^[:space:]]+) ]]; then
           REQUIREMENT_ID="${BASH_REMATCH[1]}"
           printf '%s\n' "$REQUIREMENT_ID" > current_requirement.txt
