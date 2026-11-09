@@ -91,7 +91,7 @@ jobs:
         echo "original_sha=$ORIGINAL_SHA" >> "$GITHUB_OUTPUT"
 
     # Runs code analysis with C/C++test.
-    - name: Run C/C++test
+    - name: Check MISRA compliance with Parasoft C/C++test
       id: run_cpptest
       # Use the 'run-cpptest-action' GitHub action.
       uses: parasoft/run-cpptest-action@2
@@ -109,7 +109,7 @@ jobs:
         # additionalParams: '-property report.custom.extension=sarif -property report.custom.xsl.file=${PARASOFT_SARIF_XSL}'
 
     # Both AI steps commit to the shared improvement branch.
-    - name: Run C/C++test AI Autofix
+    - name: AI Autofix MISRA violations
       id: run_cpptest_autofix
       if: always() && steps.prepare_cpptest_improvements.outcome == 'success' && steps.run_cpptest.outcome == 'failure'
       env:
@@ -129,7 +129,7 @@ jobs:
         # Run AI Agent to fix violations and commit changes
         "$WORKFLOWS_DIR/cpptest-agent-run.sh"
 
-    - name: Run Unit Tests
+    - name: Execute Parasoft GoogleTest tests using Lauterbach Tools
       if: always() && steps.build.outcome == 'success'
       working-directory: ${{github.workspace}}
       shell: bash
@@ -144,7 +144,7 @@ jobs:
       run: make cpptestcov-compute cpptestcov-suppress cpptestcov-report
 
     # Runs C/C++test AI test generation to automatically ensure high MC/DC coverage
-    - name: Run C/C++test AI Tests Generation
+    - name: AI-generate GoogleTest cases to increase coverage
       if: always() && steps.prepare_cpptest_improvements.outcome == 'success' && steps.build.outcome == 'success'
       id: run_cpptest_tests_gen
       env:
@@ -197,7 +197,7 @@ jobs:
       run: |
         cp -- helper/reports/compliance_report.html helper/reports/parasoft-logo.png .report/
 
-    - name: Setup Pages
+    - name: Setup GitHub Pages
       if: always() && steps.prepare_compliance_report.outcome == 'success'
       uses: actions/configure-pages@v4
 
