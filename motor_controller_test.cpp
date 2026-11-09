@@ -38,4 +38,4 @@ TEST(BasicTests, SetMotorSpeedZero) {
   RecordProperty("req", "REQ-123-POSITIVE");
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
-}
+} 
