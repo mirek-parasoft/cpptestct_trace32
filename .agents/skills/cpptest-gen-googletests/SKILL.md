@@ -1,6 +1,6 @@
 ---
 name: cpptest-gen-googletests
-description: "Use when: generating Google Test cases for C or C++ code to ensure high MC/DC code coverage"
+description: "Use when: generating Google Test cases for C or C++ code to improve MC/DC and line coverage"
 ---
 
 # C/C++test Generate Google Tests Skill
@@ -10,7 +10,7 @@ This skill generates Google Test cases for C or C++ code. Code changes can be op
 ## When to Use This Skill
 
 Use this skill when:
-- User wants to generate Google Test cases for C or C++ code to ensure high MC/DC code coverage
+- User wants to generate Google Test cases for C or C++ code to improve MC/DC and line coverage
 
 ## Assets
 
@@ -18,16 +18,17 @@ This skill uses the following external resources and tools:
 | Type | Name | Description | Failure Handling |
 | --- | --- | --- | --- |
 | Script | `helper/scripts/cpptest-unittest.sh` | Builds the project, runs available Google Test cases and collects code coverage. This is **the only way** to run unit tests; using other commands or tools may lead to incorrect results. | Report error and exit |
-| MCP Tool | `query_mcdc_coverage` | Fetches MC/DC coverage results from the executed Google Test cases, together with information about the missing condtional values required to achieve full coverage. | Report error and exit |
+| MCP Tool | `query_mcdc_coverage` | Fetches MC/DC coverage results from the executed Google Test cases, together with information about the missing conditional values required to achieve full coverage. | Report error and exit |
+| MCP Tool | `query_line_coverage` | Fetches coverable, covered, not-covered, or suppressed lines for a source file. | Report error and exit |
 
 ## Workflow
 
 Overview of the workflow:
 - Read configuration parameters
-- Run unit tests and generate MC/DC coverage results
-- Analyze MC/DC coverage results and generate new GoogleTest test cases
-- Execute all test cases including newly generated and check the MC/DC coverage results for completeness
-- Repeat workflow until 100% MC/DC coverage is achieved
+- Run unit tests and generate coverage results
+- Analyze MC/DC and line coverage results and generate new GoogleTest test cases
+- Execute all test cases including newly generated ones and check both coverage results
+- Repeat workflow until both MC/DC and line coverage reach 100%
 - Commit all generated GoogleTest unit test cases (Conditional)
 
 
@@ -49,7 +50,7 @@ echo $CPPTEST_ITERATION_LIMIT
 
 Store these values as **commit_tests** (boolean), and **iteration_limit** (integer) for use in later steps. The user's explicit request to commit (if any) also sets **commit_tests** to `true`. The user's explicit request for an iteration limit (if any) overrides **iteration_limit**.
 
-### Step 2: Run unit tests and generate MC/DC coverage results
+### Step 2: Run unit tests and generate coverage results
 
 Execute the following script in the root of the project:
 ```bash
@@ -58,15 +59,15 @@ Execute the following script in the root of the project:
 
 This is **the only** way of building the project, executing unit tests and generating coverage reports - **do not** use any other commands or tools.
 
-### Step 3: Analyze MC/DC coverage results and generate new GoogleTest test cases
+### Step 3: Analyze MC/DC and line coverage results and generate new GoogleTest test cases
 
-Use `query_mcdc_coverage` MCP tool to read MC/DC coverage results and hints regarding uncovered conditional values from `.coverage` directory generated during coverage reports generation. **Do not** analyze the report files manually or use any other tools to get MC/DC coverage information, as this may lead to incorrect results and inefficient workflow.
+For each source file under test, call `query_mcdc_coverage` with the absolute `.coverage` directory and source-file paths to read its MC/DC results and missing-condition hints. Then call `query_line_coverage` for that same file with the same absolute paths and `query_type: "notcovered"` to find uncovered lines. Call the tools sequentially, one file at a time. **Do not** inspect report files manually or use other tools to determine coverage; use the MCP results.
 
-If there is 100% MC/DC code coverage reported for all tested files, finish the workflow **immediately**.
+If all tested files have 100% MC/DC and `query_line_coverage` reports no uncovered coverable lines, finish the workflow **immediately**.
 
-Read carefully the "Tested condition values" and "Missing condition values" information from MCP tool output. Use information about "Missing condition values" to generate new GoogleTest test cases that specifically target the uncovered conditional values. Avoid generating test cases for conditional values that are already covered.
+Read the "Tested condition values" and "Missing condition values" information from the MC/DC tool output. Use the "Missing condition values" to create tests for uncovered conditional behavior, and use the line-coverage output to target uncovered executable lines. Avoid generating tests for conditions or lines that are already covered. If the line-coverage output includes suppressed lines, do not treat them as actionable uncovered lines.
 
-Check the last commit message for the information about implemented requirements. If the commit message includes requirement association in the form of `Requirement: <requirement_id>`, use this information to annotate the generated test cases accordingly. Test cases annotation should be done by injecting the following function call at the beginning of each generated test case: `RecordProperty("req", "<requirement_id>");`. The assumption is that uncovered code is related to the implemented requirement(s). Do not analyze this information manuall, just assume it is correct. All generated test cases should include this annotation. If no requirement association is provided in the commit message, skip adding annotations to generated test cases. 
+Check the last commit message for the information about implemented requirements. If the commit message includes requirement association in the form of `Requirement: <requirement_id>`, use this information to annotate the generated test cases accordingly. Test cases annotation should be done by injecting the following function call at the beginning of each generated test case: `RecordProperty("req", "<requirement_id>");`. The assumption is that uncovered code is related to the implemented requirement(s). Do not analyze this information manually, just assume it is correct. All generated test cases should include this annotation. If no requirement association is provided in the commit message, skip adding annotations to generated test cases.
 
 ### Step 4: Execute all test cases including newly generated ones
 
@@ -78,9 +79,9 @@ Execute the following script in the root of the project:
 This is **the only** way of building the project, executing unit tests and generating coverage reports - **do not** use any other commands or tools.
 
 
-### Step 5: Repeat workflow until 100% MC/DC coverage is achieved
+### Step 5: Repeat workflow until both coverage goals are achieved
 
-Use `query_mcdc_coverage` MCP tool to read MC/DC coverage results after executing generated tests. If the coverage is not 100% repeat from Step 3 until full coverage is achieved, or the number of attempts reaches **iteration_limit** (from Step 1)
+After executing generated tests, use `query_mcdc_coverage` and `query_line_coverage` again to check all tested files. Repeat from Step 3 until both MC/DC and line coverage are 100%, or the number of attempts reaches **iteration_limit** (from Step 1). Do not stop just because one coverage type has reached 100%. If either goal cannot be achieved within the limit, report the final results and the remaining missing conditions or uncovered lines.
 
 ### Step 6: Commit all generated GoogleTest unit test cases (Conditional)
 
@@ -89,5 +90,5 @@ This step should only be performed if any test cases were generated AND if **com
 Commit changes to the repository using `git commit` command. Be sure to follow the commit message guidelines below to ensure consistency and clarity in the commit history. **Do not** use any other committer e-mail, name, or commit message format, as this may lead to confusion and inefficient workflow:
 - **Always** use 'autofix@demo' as committer e-mail.
 - **Always** use 'Autofix' as committer name.
-- Use verbose commit message - include information about the final result for MC/DC coverage.
-- The first line of the commit message must be exactly "New auto generated test cases: <number of generated test cases>, followed by a blank line. The subsequent lines should provide detailed information about the final MC/DC coverage results and any additional context relevant to the generated tests.
+- Use a verbose commit message that includes the final MC/DC and line coverage results.
+- The first line of the commit message must be exactly "New auto generated test cases: <number of generated test cases>", followed by a blank line. The subsequent lines should provide detailed information about the final MC/DC and line coverage results and any additional context relevant to the generated tests.
