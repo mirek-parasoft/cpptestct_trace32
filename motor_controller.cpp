@@ -18,12 +18,12 @@ uint16_t readSensor()
     return SENSOR_DATA; 
 }
 
-void setMotorSpeed(uint16_t speed)
+void setMotorSpeed(const uint16_t speed)
 {
     MOTOR_SPEED = speed;
 }
 
-int computeControl(int sensor, int divisor)
+int computeControl(const int sensor, const int divisor)
 {
     int value = 0;
 
@@ -40,7 +40,7 @@ int computeControl(int sensor, int divisor)
     return value;
 }
 
-int processCommand(const char* cmd, const char* arg)
+int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
         if (arg == nullptr) {
@@ -64,7 +64,7 @@ int processCommand(const char* cmd, const char* arg)
     return -1; 
 }
 
-int processor(char* cmd, char* arg)
+int processor(const char* const cmd, const char* const arg)
 {
     uint16_t sensor = readSensor();
     int control = computeControl(sensor, 0); 
