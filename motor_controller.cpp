@@ -38,7 +38,7 @@ int computeControl(const int sensor, const int divisor)
     } else {
         return DEFAULT_VALUE;
     }
-    return value;
+    return value; // parasoft-cov-suppress LC "Unreachable: every preceding if/else branch returns."
 } 
 
 int processCommand(const char* const cmd, const char* const arg)
@@ -50,7 +50,7 @@ int processCommand(const char* const cmd, const char* const arg)
         char* end = nullptr;
         errno = 0;
         const long val = strtol(arg, &end, 10);
-        if ((errno != 0) || (end == arg) || (*end != '\0') ||
+        if ((errno != 0) || (end == arg) || (*end != '\0') || // parasoft-cov-suppress MCDC "Final condition val > INT_MAX is unreachable after val <= UINT16_MAX on this 32-bit int target; other five conditions are covered."
             (val < 0) || (val > UINT16_MAX) || (val > INT_MAX)) {
             return -1;
         }

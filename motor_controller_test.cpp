@@ -63,3 +63,38 @@ TEST(BasicTests, InvalidMotorSpeedLeavesRegisterUnchanged) {
     EXPECT_EQ(MOTOR_SPEED, 123);
   }
 }
+
+class MotorControllerCoverageTests : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    SENSOR_DATA = saved_sensor_;
+    MOTOR_SPEED = saved_speed_;
+  }
+
+ private:
+  const uint16_t saved_sensor_ = SENSOR_DATA;
+  const uint16_t saved_speed_ = MOTOR_SPEED;
+};
+
+TEST_F(MotorControllerCoverageTests, ProcessorReadAtLowThresholdUsesDefaultControl) {
+  RecordProperty("req", "REQ-33-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  SENSOR_DATA = SENSOR_LOW_THRESHOLD;
+  MOTOR_SPEED = 321;
+
+  EXPECT_EQ(processor("READ", nullptr),
+            static_cast<int>(SENSOR_LOW_THRESHOLD) + DEFAULT_VALUE);
+  EXPECT_EQ(SENSOR_DATA, SENSOR_LOW_THRESHOLD);
+  EXPECT_EQ(MOTOR_SPEED, 321);
+}
+
+TEST_F(MotorControllerCoverageTests, UnknownCommandLeavesMotorSpeedUnchanged) {
+  RecordProperty("req", "REQ-33-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  MOTOR_SPEED = 321;
+
+  EXPECT_EQ(processCommand("UNKNOWN", nullptr), -1);
+  EXPECT_EQ(MOTOR_SPEED, 321);
+}
