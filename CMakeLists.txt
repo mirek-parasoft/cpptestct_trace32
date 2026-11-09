@@ -51,11 +51,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 target_compile_definitions(gtest PRIVATE CPPTEST_GTEST_XML_TRANSPORT)
-enable_testing()
-
-set(LAUTERBACH_T32_EXECUTABLE
-    "/opt/lauterbach/t32/bin/pc_linux64/t32marm"
-    CACHE FILEPATH "Path to the Lauterbach T32 ARM debugger executable")
 
 if(CPPTEST_COVERAGE)
   include(cpptest-coverage.cmake)
@@ -90,17 +85,4 @@ target_link_libraries(
   gmock
 )
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter)
-
-# cpptest.cmm writes the GoogleTest XML report to .build/gtest_results.xml
-add_test(
-  NAME goo_test
-  COMMAND "${Python3_EXECUTABLE}"
-          "${CMAKE_CURRENT_SOURCE_DIR}/run_t32_tests.py"
-          --t32 "${LAUTERBACH_T32_EXECUTABLE}"
-          --script "${CMAKE_CURRENT_SOURCE_DIR}/cpptest.cmm"
-          --xml "${CMAKE_CURRENT_SOURCE_DIR}/.build/gtest_results.xml"
-)
-set_tests_properties(goo_test PROPERTIES
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-)
+# Tests are executed on target with cpptest-t32-execution.sh

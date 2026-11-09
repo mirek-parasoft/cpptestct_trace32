@@ -119,10 +119,9 @@ jobs:
 
     - name: Run Unit Tests
       if: always() && steps.build.outcome == 'success'
-      working-directory: ${{github.workspace}}/.build
+      working-directory: ${{github.workspace}}
       shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: ctest || true
+      run: ./cpptest-t32-execution.sh || true
 
     - name: Generate Coverage Reports
       id: cpptest_coverage
