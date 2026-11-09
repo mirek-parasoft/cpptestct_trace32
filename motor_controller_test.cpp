@@ -39,3 +39,19 @@ TEST(BasicTests, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 }
+
+TEST(BasicTests, SetMotorSpeedMaximum) {
+  EXPECT_EQ(processCommand("SET", "65535"), 65535);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+}
+
+TEST(BasicTests, RejectInvalidMotorSpeed) {
+  setMotorSpeed(123);
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(processCommand("SET", "abc"), -1);
+  EXPECT_EQ(processCommand("SET", "12abc"), -1);
+  EXPECT_EQ(processCommand("SET", "-1"), -1);
+  EXPECT_EQ(processCommand("SET", "65536"), -1);
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
