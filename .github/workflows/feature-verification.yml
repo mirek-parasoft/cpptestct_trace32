@@ -65,10 +65,21 @@ jobs:
     - name: Prepare shared C/C++test improvement branch
       id: prepare_cpptest_improvements
       shell: bash
+      working-directory: ${{github.workspace}}
       env:
         ORIGINAL_BRANCH: ${{ github.head_ref || github.ref_name }}
       run: |
         set -euo pipefail
+
+        rm -f -- current_requirement.txt
+        COMMIT_MESSAGE=$(git log -1 --format=%B)
+        if [[ "$COMMIT_MESSAGE" =~ ^Requirement:[[:blank:]]+([^[:space:]]+) ]]; then
+          REQUIREMENT_ID="${BASH_REMATCH[1]}"
+          printf '%s\n' "$REQUIREMENT_ID" > current_requirement.txt
+          echo "Current requirement: $REQUIREMENT_ID"
+        else
+          echo "Latest commit message does not start with a requirement ID. No requirement file created."
+        fi
 
         BRANCH_NAME="autofix/$ORIGINAL_BRANCH/$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
         ORIGINAL_SHA=$(git rev-parse HEAD)

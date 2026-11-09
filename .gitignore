@@ -4,5 +4,6 @@
 .cpptest/
 cpptest_results.clog
 gtest.xml
+/current_requirement.txt
 .report/*
 reports/*
