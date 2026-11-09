@@ -33,7 +33,7 @@ int computeControl(int sensor, int divisor)
         return DEFAULT_VALUE;
     }
     return value;
-}
+} 
 
 int processCommand(const char* cmd, const char* arg)
 {
