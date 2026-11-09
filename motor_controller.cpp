@@ -26,6 +26,10 @@ int computeControl(int sensor, int divisor)
     int value = 0;
 
     if (sensor > SENSOR_HIGH_THRESHOLD) {
+        if (divisor == 0) {
+            // Use zero control output when the divisor is invalid.
+            return 0;
+        }
         return sensor / divisor;
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
         return sensor * MULTIPLIER;

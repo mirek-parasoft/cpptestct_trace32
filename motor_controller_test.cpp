@@ -33,6 +33,14 @@ TEST(BasicTests, TestGetValueBelowMaxTreshold) {
   EXPECT_EQ(computeControl(200, 10), 600);
 }
 
+TEST(BasicTests, ZeroDivisorAboveThreshold) {
+  EXPECT_EQ(computeControl(600, 0), 0);
+}
+
+TEST(BasicTests, ZeroDivisorBelowThreshold) {
+  EXPECT_EQ(computeControl(200, 0), 600);
+}
+
 TEST(BasicTests, SetMotorSpeedZero) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
