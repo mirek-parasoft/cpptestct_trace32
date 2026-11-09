@@ -39,3 +39,82 @@ TEST(BasicTests, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 } 
+
+namespace {
+
+class AdditionalMotorControllerTests : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    saved_sensor_ = SENSOR_DATA;
+    saved_speed_ = MOTOR_SPEED;
+    SENSOR_DATA = 0;
+    MOTOR_SPEED = 123;
+  }
+
+  void TearDown() override {
+    SENSOR_DATA = saved_sensor_;
+    MOTOR_SPEED = saved_speed_;
+  }
+
+ private:
+  uint16_t saved_sensor_ = 0;
+  uint16_t saved_speed_ = 0;
+};
+
+TEST_F(AdditionalMotorControllerTests, ProcessorReadsHighSensorWithZeroDivisor) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+  SENSOR_DATA = 600;
+
+  EXPECT_EQ(processor("READ", ""), 600 + DEFAULT_VALUE);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(AdditionalMotorControllerTests, SensorAtLowThresholdUsesDefault) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(SENSOR_LOW_THRESHOLD, 10), DEFAULT_VALUE);
+}
+
+TEST_F(AdditionalMotorControllerTests, UnknownCommandIsRejected) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("UNKNOWN", "0"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(AdditionalMotorControllerTests, SetWithoutDigitsIsRejected) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(AdditionalMotorControllerTests, SetWithTrailingCharactersIsRejected) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("SET", "12x"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(AdditionalMotorControllerTests, SetWithPositiveOverflowIsRejected) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(AdditionalMotorControllerTests, SetWithNegativeOverflowIsRejected) {
+  RecordProperty("req", "REQ-30-FAULT-MODE");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(processCommand("SET", "-999999999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+}  // namespace
