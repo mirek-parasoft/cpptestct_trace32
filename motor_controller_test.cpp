@@ -42,4 +42,23 @@ TEST(BasicTests, SetMotorSpeedZero) {
   RecordProperty("req", "REQ-123-POSITIVE");
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
-} 
+}
+
+TEST(BasicTests, SetMotorSpeedValidRange) {
+  EXPECT_EQ(processCommand("SET", "123"), 123);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+  EXPECT_EQ(processCommand("SET", "65535"), 65535);
+  EXPECT_EQ(MOTOR_SPEED, UINT16_MAX);
+}
+
+TEST(BasicTests, InvalidSpeedLeavesMotorUnchanged) {
+  setMotorSpeed(123);
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(processCommand("SET", "abc"), -1);
+  EXPECT_EQ(processCommand("SET", "12abc"), -1);
+  EXPECT_EQ(processCommand("SET", "-1"), -1);
+  EXPECT_EQ(processCommand("SET", "65536"), -1);
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999"), -1);
+  EXPECT_EQ(processCommand("SET", nullptr), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
