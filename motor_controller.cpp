@@ -42,7 +42,7 @@ int processCommand(const char* cmd, const char* arg)
         setMotorSpeed((uint16_t)val);
         return val;
     }
-
+ 
     if (strcmp(cmd, "READ") == 0) {
         return readSensor();
     }
