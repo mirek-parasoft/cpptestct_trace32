@@ -37,7 +37,7 @@ int computeControl(const int sensor, const int divisor)
     } else {
         return DEFAULT_VALUE;
     }
-    return value;
+    return value; // parasoft-cov-suppress LC "Unreachable: every preceding branch returns."
 }
 
 int processCommand(const char* const cmd, const char* const arg)
@@ -46,7 +46,7 @@ int processCommand(const char* const cmd, const char* const arg)
         char* end = nullptr;
         errno = 0;
         const long parsed = strtol(arg, &end, 10);
-        if ((errno == ERANGE) || (end == arg) || (*end != '\0') ||
+        if ((errno == ERANGE) || (end == arg) || (*end != '\0') || // parasoft-cov-suppress MCDC "ARM target: long and int have identical ranges; parsed < INT_MIN and parsed > INT_MAX cannot be true. Other conditions are covered by tests."
             (parsed < INT_MIN) || (parsed > INT_MAX)) {
             return -1;
         }
