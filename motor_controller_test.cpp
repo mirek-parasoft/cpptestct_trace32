@@ -3,6 +3,9 @@
 #include "motor_controller.h"
 #include "comm-plugin/cpptest_gtest_xml_listener.h"
 
+// Match the implemented overload; the header declares a const-pointer overload.
+int processor(char* const cmd, char* const arg);
+
 int main(int argc, char** const argv) {
   ::testing::InitGoogleTest(&argc, argv);
   
@@ -60,5 +63,60 @@ TEST(BasicTests, InvalidSpeedLeavesMotorUnchanged) {
   EXPECT_EQ(processCommand("SET", "65536"), -1);
   EXPECT_EQ(processCommand("SET", "999999999999999999999999"), -1);
   EXPECT_EQ(processCommand("SET", nullptr), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+class CoverageTests : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    saved_sensor_ = SENSOR_DATA;
+    saved_motor_speed_ = MOTOR_SPEED;
+  }
+
+  void TearDown() override {
+    SENSOR_DATA = saved_sensor_;
+    MOTOR_SPEED = saved_motor_speed_;
+  }
+
+ private:
+  uint16_t saved_sensor_ = 0;
+  uint16_t saved_motor_speed_ = 0;
+};
+
+TEST_F(CoverageTests, SensorAtLowThresholdUsesDefaultValue) {
+  RecordProperty("req", "REQ-29-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(SENSOR_LOW_THRESHOLD, 10), DEFAULT_VALUE);
+}
+
+TEST_F(CoverageTests, ReadCommandReturnsSensorWithoutChangingMotorSpeed) {
+  RecordProperty("req", "REQ-29-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+  SENSOR_DATA = 321;
+  MOTOR_SPEED = 123;
+
+  EXPECT_EQ(processCommand("READ", nullptr), 321);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(CoverageTests, UnknownCommandIsRejectedWithoutChangingMotorSpeed) {
+  RecordProperty("req", "REQ-29-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+  MOTOR_SPEED = 123;
+
+  EXPECT_EQ(processCommand("UNKNOWN", nullptr), -1);
+  EXPECT_EQ(MOTOR_SPEED, 123);
+}
+
+TEST_F(CoverageTests, ProcessorAddsFallbackControlToReadResult) {
+  RecordProperty("req", "REQ-29-FAULT-TESTING");
+  RecordProperty("cpptest_filename", __FILE__);
+  SENSOR_DATA = 600;
+  MOTOR_SPEED = 123;
+  char command[] = "READ";
+  const int expected = 600 + DEFAULT_VALUE;
+
+  EXPECT_EQ(processor(command, nullptr), expected);
   EXPECT_EQ(MOTOR_SPEED, 123);
 }
