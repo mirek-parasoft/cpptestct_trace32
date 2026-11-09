@@ -12,7 +12,7 @@
         {
             "label": "CMake: Build and Run",
             "type": "shell",
-            "command": "bash -c 'cmake --build .build && rm -rf .build/cpptest-coverage/*/*.clog .build/gtest-report && { ./cpptest-t32-execution.sh || true; } && make -C .build cpptestcov-compute cpptestcov-suppress cpptestcov-report'",
+            "command": "bash -c 'cmake --build .build && rm -rf .build/cpptest-coverage/*/*.clog .build/gtest-report && { ./helper/scripts/cpptest-t32-execution.sh || true; } && make -C .build cpptestcov-compute cpptestcov-suppress cpptestcov-report'",
             "group": "build"
         },
         {

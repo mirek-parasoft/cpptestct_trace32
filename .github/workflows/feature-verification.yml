@@ -121,7 +121,7 @@ jobs:
       if: always() && steps.build.outcome == 'success'
       working-directory: ${{github.workspace}}
       shell: bash
-      run: ./cpptest-t32-execution.sh || true
+      run: ./helper/scripts/cpptest-t32-execution.sh || true
 
     - name: Generate Coverage Reports
       id: cpptest_coverage
@@ -183,7 +183,7 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}
       run: |
-        cp -- helper/compliance_report.html helper/parasoft-logo.png .report/
+        cp -- helper/reports/compliance_report.html helper/reports/parasoft-logo.png .report/
 
     - name: Setup Pages
       if: always() && steps.prepare_compliance_report.outcome == 'success'

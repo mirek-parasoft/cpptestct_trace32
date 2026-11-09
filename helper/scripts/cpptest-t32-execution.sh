@@ -10,15 +10,16 @@ set -euo pipefail
 #   PYTHON                    - Python 3 interpreter
 #   T32_TIMEOUT               - T32 timeout in seconds
 
-# cpptest.cmm uses paths relative to the project root
-cd "$(dirname "$0")"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd -- "$SCRIPT_DIR/../.." && pwd)"
+cd "$PROJECT_ROOT"
 
 LAUTERBACH_T32_EXECUTABLE="${LAUTERBACH_T32_EXECUTABLE:-/opt/lauterbach/t32/bin/pc_linux64/t32marm}"
 PYTHON="${PYTHON:-python3}"
 T32_TIMEOUT="${T32_TIMEOUT:-600}"
 
-exec "$PYTHON" run_t32_tests.py \
+exec "$PYTHON" "$SCRIPT_DIR/run_t32_tests.py" \
     --t32 "$LAUTERBACH_T32_EXECUTABLE" \
-    --script cpptest.cmm \
-    --xml .build/gtest_results.xml \
+    --script "$PROJECT_ROOT/cpptest.cmm" \
+    --xml "$PROJECT_ROOT/.build/gtest_results.xml" \
     --timeout "$T32_TIMEOUT"

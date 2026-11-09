@@ -85,4 +85,4 @@ target_link_libraries(
   gmock
 )
 
-# Tests are executed on target with cpptest-t32-execution.sh
+# Tests are executed on target with helper/scripts/cpptest-t32-execution.sh

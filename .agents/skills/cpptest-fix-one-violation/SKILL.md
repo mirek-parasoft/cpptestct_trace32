@@ -21,7 +21,7 @@ Do NOT use this skill when:
 This skill uses the following external resources and tools:
 | Type | Name | Description | Failure Handling |
 | --- | --- | --- | --- |
-| Script | `cpptest-analyze.sh` | Builds the project and runs Parasoft C/C++test analysis. This is **the only way** to run the analysis; using other commands or tools may lead to incorrect results. | Report error and exit |
+| Script | `helper/scripts/cpptest-analyze.sh` | Builds the project and runs Parasoft C/C++test analysis. This is **the only way** to run the analysis; using other commands or tools may lead to incorrect results. | Report error and exit |
 | MCP Tool | `get_violations_from_report_file` | Fetches violations from a Parasoft C/C++test report file. | Report error and exit |
 | MCP Tool | `get_rule_documentation` | Fetches rule documentation from Parasoft C/C++test. | Report warning and proceed |
 
@@ -65,7 +65,7 @@ Analyze the violation details (message, file, line), the source code at the rele
 If verification is requested, execute the following script in the root of the project:
 
 ```bash
-./cpptest-analyze.sh
+./helper/scripts/cpptest-analyze.sh
 ```
 
 This is **the only** way of building the project and running the analysis — **do not** use any other commands or tools.

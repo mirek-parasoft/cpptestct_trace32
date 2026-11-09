@@ -17,7 +17,7 @@ Use this skill when:
 This skill uses the following external resources and tools:
 | Type | Name | Description | Failure Handling |
 | --- | --- | --- | --- |
-| Script | `cpptest-unittest.sh` | Builds the project, runs available Google Test cases and collects code coverage. This is **the only way** to run unit tests; using other commands or tools may lead to incorrect results. | Report error and exit |
+| Script | `helper/scripts/cpptest-unittest.sh` | Builds the project, runs available Google Test cases and collects code coverage. This is **the only way** to run unit tests; using other commands or tools may lead to incorrect results. | Report error and exit |
 | MCP Tool | `query_mcdc_coverage` | Fetches MC/DC coverage results from the executed Google Test cases, together with information about the missing condtional values required to achieve full coverage. | Report error and exit |
 
 ## Workflow
@@ -53,7 +53,7 @@ Store these values as **commit_tests** (boolean), and **iteration_limit** (integ
 
 Execute the following script in the root of the project:
 ```bash
-./cpptest-unittest.sh
+./helper/scripts/cpptest-unittest.sh
 ```
 
 This is **the only** way of building the project, executing unit tests and generating coverage reports - **do not** use any other commands or tools.
@@ -72,7 +72,7 @@ Check the last commit message for the information about implemented requirements
 
 Execute the following script in the root of the project:
 ```bash
-./cpptest-unittest.sh
+./helper/scripts/cpptest-unittest.sh
 ```
 
 This is **the only** way of building the project, executing unit tests and generating coverage reports - **do not** use any other commands or tools.

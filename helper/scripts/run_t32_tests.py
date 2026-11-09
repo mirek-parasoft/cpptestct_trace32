@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run GoogleTest on target via Lauterbach T32 and evaluate the XML report."""
+"""Run target GoogleTests via Lauterbach T32 and evaluate the XML report."""
 
 import argparse
 import subprocess
