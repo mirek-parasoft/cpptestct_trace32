@@ -47,3 +47,19 @@ TEST(BasicTests, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 }
+
+TEST(BasicTests, SetMotorSpeedMaximum) {
+  EXPECT_EQ(processCommand("SET", "65535"), 65535);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+}
+
+TEST(BasicTests, InvalidMotorSpeedLeavesRegisterUnchanged) {
+  const char* const invalid_args[] = {
+      "", "abc", "12abc", "-1", "65536",
+      "999999999999999999999999999999999999", nullptr};
+  for (const char* const arg : invalid_args) {
+    MOTOR_SPEED = 123;
+    EXPECT_EQ(processCommand("SET", arg), -1);
+    EXPECT_EQ(MOTOR_SPEED, 123);
+  }
+}
