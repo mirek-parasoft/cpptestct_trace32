@@ -65,3 +65,44 @@ TEST(BasicTests, InvalidMotorSpeedLeavesRegisterUnchanged) {
   EXPECT_EQ(processCommand("SET", "999999999999999999999999999999"), -1);
   EXPECT_EQ(MOTOR_SPEED, 42);
 }
+
+TEST(BasicTests, ReadCommandReturnsSensorWithoutChangingMotorSpeed) {
+  const uint16_t saved_sensor = SENSOR_DATA;
+  const uint16_t saved_speed = MOTOR_SPEED;
+  SENSOR_DATA = 321;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processCommand("READ", nullptr), 321);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  SENSOR_DATA = saved_sensor;
+  MOTOR_SPEED = saved_speed;
+}
+
+TEST(BasicTests, UnknownCommandReturnsErrorWithoutChangingRegisters) {
+  const uint16_t saved_sensor = SENSOR_DATA;
+  const uint16_t saved_speed = MOTOR_SPEED;
+  SENSOR_DATA = 321;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processCommand("UNKNOWN", "123"), -1);
+  EXPECT_EQ(SENSOR_DATA, 321);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  SENSOR_DATA = saved_sensor;
+  MOTOR_SPEED = saved_speed;
+}
+
+TEST(BasicTests, ProcessorAddsControlToReadCommandResult) {
+  const uint16_t saved_sensor = SENSOR_DATA;
+  const uint16_t saved_speed = MOTOR_SPEED;
+  SENSOR_DATA = 200;
+  MOTOR_SPEED = 42;
+
+  EXPECT_EQ(processor("READ", nullptr), 800);
+  EXPECT_EQ(SENSOR_DATA, 200);
+  EXPECT_EQ(MOTOR_SPEED, 42);
+
+  SENSOR_DATA = saved_sensor;
+  MOTOR_SPEED = saved_speed;
+}
