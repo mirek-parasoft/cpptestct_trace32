@@ -52,7 +52,7 @@ int processCommand(const char* const cmd, const char* const arg)
     if (strcmp(cmd, "SET") == 0) {
         char* end = nullptr;
         errno = 0;
-        long val = strtol(arg, &end, 10);
+        const long val = strtol(arg, &end, 10);
         if ((errno != 0) || (end == arg) || (*end != '\0') ||
             (val < 0) || (val > UINT16_MAX)) {
             return -1;
@@ -69,8 +69,8 @@ int processCommand(const char* const cmd, const char* const arg)
 
 int processor(const char* const cmd, const char* const arg)
 {
-    uint16_t sensor = readSensor();
-    int control = computeControl(sensor, 0); 
+    const uint16_t sensor = readSensor();
+    const int control = computeControl(sensor, 0);
     return processCommand(cmd, arg) + control;
 }
 
