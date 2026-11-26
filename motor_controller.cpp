@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <errno.h>
 #include <stdlib.h>  
 #include <string.h>  
 
@@ -16,12 +17,12 @@ uint16_t readSensor()
     return SENSOR_DATA; 
 }
 
-void setMotorSpeed(uint16_t speed)
+void setMotorSpeed(const uint16_t speed)
 {
     MOTOR_SPEED = speed;
 }
 
-bool canStartMotor(bool startRequested, bool guardClosed, bool faultActive)
+bool canStartMotor(const bool startRequested, const bool guardClosed, const bool faultActive)
 {
     if (startRequested && guardClosed && !faultActive) {
         return true;
@@ -29,11 +30,15 @@ bool canStartMotor(bool startRequested, bool guardClosed, bool faultActive)
     return false;
 }
 
-int computeControl(int sensor, int divisor)
+int computeControl(const int sensor, const int divisor)
 {
     int value = 0;
     if (sensor > SENSOR_HIGH_THRESHOLD) {
-        value = sensor / divisor;
+        if (divisor == 0) {
+            value = DEFAULT_VALUE;
+        } else {
+            value = sensor / divisor;
+        }
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
         value = sensor * MULTIPLIER;
     } else {
@@ -42,10 +47,16 @@ int computeControl(int sensor, int divisor)
     return value;
 }
 
-int processCommand(const char* cmd, const char* arg)
+int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
-        int val = atoi(arg);
+        char* end = nullptr;
+        errno = 0;
+        const long val = strtol(arg, &end, 10);
+        if ((errno != 0) || (end == arg) || (*end != '\0') ||
+            (val < 0) || (val > UINT16_MAX)) {
+            return -1;
+        }
         setMotorSpeed((uint16_t)val);
         return val;
     }
@@ -56,14 +67,14 @@ int processCommand(const char* cmd, const char* arg)
     return -1; 
 }
 
-int processor(const char* cmd, const char* arg)
+int processor(const char* const cmd, const char* const arg)
 {
-    uint16_t sensor = readSensor();
-    int control = computeControl(sensor, 0); 
+    const uint16_t sensor = readSensor();
+    const int control = computeControl(sensor, 0);
     return processCommand(cmd, arg) + control;
 }
 
-uint16_t computeStartupSpeed(bool usePreset, uint16_t presetSpeed)
+uint16_t computeStartupSpeed(const bool usePreset, const uint16_t presetSpeed)
 {
     uint16_t startupSpeed = 0;
     if (usePreset) {

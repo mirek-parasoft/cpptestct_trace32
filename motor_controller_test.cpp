@@ -3,7 +3,7 @@
 #include "motor_controller.h"
 #include "comm-plugin/cpptest_gtest_xml_listener.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** const argv) {
   ::testing::InitGoogleTest(&argc, argv);
   
   cpptest::InstallXmlTransportListener();
@@ -33,6 +33,12 @@ TEST(BasicTests, TestGetValueBelowMaxTreshold) {
   EXPECT_EQ(computeControl(200, 10), 600);
 }
 
+TEST(BasicTests, ZeroDivisorUsesDefaultControl) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeControl(600, 0), DEFAULT_VALUE);
+}
+
 TEST(BasicTests, SetMotorSpeedZero) {
   RecordProperty("cpptest_filename", __FILE__);
   RecordProperty("req", "REQ-123-POSITIVE");
@@ -46,6 +52,36 @@ TEST(BasicTests, canStartMotor) {
 
   EXPECT_TRUE(canStartMotor(true, true, false));
   EXPECT_FALSE(canStartMotor(false, true, false));
+}
+
+TEST(BasicTests, OpenGuardPreventsMotorStart) {
+  RecordProperty("req", "REQ-456");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, false, false));
+}
+
+TEST(BasicTests, ActiveFaultPreventsMotorStart) {
+  RecordProperty("req", "REQ-456");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, true, true));
+}
+
+TEST(BasicTests, SetCommandValidatesSpeed) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t originalSpeed = MOTOR_SPEED;
+  EXPECT_EQ(processCommand("SET", "65535"), 65535);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(processCommand("SET", "invalid"), -1);
+  EXPECT_EQ(processCommand("SET", "12x"), -1);
+  EXPECT_EQ(processCommand("SET", "-1"), -1);
+  EXPECT_EQ(processCommand("SET", "65536"), -1);
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+  MOTOR_SPEED = originalSpeed;
 }
 
 TEST(BasicTests, ProcessorAddsDefaultControlToCommandResult) {
