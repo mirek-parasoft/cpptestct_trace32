@@ -48,6 +48,18 @@ TEST(BasicTests, canStartMotor) {
   EXPECT_FALSE(canStartMotor(false, true, false));
 }
 
+TEST(BasicTests, MotorStartRequiresClosedGuard) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, false, false));
+}
+
+TEST(BasicTests, MotorStartIsBlockedByActiveFault) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, true, true));
+}
+
 TEST(BasicTests, ProcessorAddsDefaultControlToCommandResult) {
   RecordProperty("cpptest_filename", __FILE__);
 
