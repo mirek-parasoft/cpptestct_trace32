@@ -33,7 +33,11 @@ int computeControl(int sensor, int divisor)
 {
     int value = 0;
     if (sensor > SENSOR_HIGH_THRESHOLD) {
-        value = sensor / divisor;
+        if (divisor == 0) {
+            value = DEFAULT_VALUE;
+        } else {
+            value = sensor / divisor;
+        }
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
         value = sensor * MULTIPLIER;
     } else {
