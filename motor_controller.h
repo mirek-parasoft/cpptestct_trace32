@@ -15,10 +15,10 @@ extern volatile uint16_t MULTIPLIER;
 uint16_t readSensor();
 void setMotorSpeed(const uint16_t speed);
 // Checks start eligibility without changing motor state.
-bool canStartMotor(bool startRequested, bool guardClosed, bool faultActive);
+bool canStartMotor(const bool startRequested, const bool guardClosed, const bool faultActive);
 int computeControl(const int sensor, const int divisor);
 int processCommand(const char* const cmd, const char* const arg);
 int processor(const char* const cmd, const char* const arg);
-uint16_t computeStartupSpeed(bool usePreset, uint16_t presetSpeed);
+uint16_t computeStartupSpeed(const bool usePreset, const uint16_t presetSpeed);
 
 #endif // GOO_H

@@ -3,7 +3,7 @@
 #include "motor_controller.h"
 #include "comm-plugin/cpptest_gtest_xml_listener.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** const argv) {
   ::testing::InitGoogleTest(&argc, argv);
   
   cpptest::InstallXmlTransportListener();
