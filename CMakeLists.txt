@@ -14,7 +14,6 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
 	cmake_policy(SET CMP0135 NEW)
 endif()
 
-# starting from v. 1.17.0 GoogleTest requires at least C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
