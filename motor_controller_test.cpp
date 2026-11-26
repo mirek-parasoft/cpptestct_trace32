@@ -47,3 +47,23 @@ TEST(BasicTests, canStartMotor) {
   EXPECT_TRUE(canStartMotor(true, true, false));
   EXPECT_FALSE(canStartMotor(false, true, false));
 }
+
+TEST(BasicTests, ProcessorAddsDefaultControlToCommandResult) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t originalSensorData = SENSOR_DATA;
+  SENSOR_DATA = 42;
+  const int readResult = processor("READ", "");
+  const int unknownCommandResult = processor("UNKNOWN", "");
+  SENSOR_DATA = originalSensorData;
+
+  EXPECT_EQ(readResult, 52);
+  EXPECT_EQ(unknownCommandResult, 9);
+}
+
+TEST(BasicTests, StartupSpeedUsesPresetOnlyWhenEnabled) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_EQ(computeStartupSpeed(true, 250), 250);
+  EXPECT_EQ(computeStartupSpeed(false, 250), 0);
+}
