@@ -54,6 +54,20 @@ TEST(BasicTests, canStartMotor) {
   EXPECT_FALSE(canStartMotor(false, true, false));
 }
 
+TEST(BasicTests, OpenGuardPreventsMotorStart) {
+  RecordProperty("req", "REQ-456");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, false, false));
+}
+
+TEST(BasicTests, ActiveFaultPreventsMotorStart) {
+  RecordProperty("req", "REQ-456");
+  RecordProperty("cpptest_filename", __FILE__);
+
+  EXPECT_FALSE(canStartMotor(true, true, true));
+}
+
 TEST(BasicTests, SetCommandValidatesSpeed) {
   RecordProperty("cpptest_filename", __FILE__);
 
