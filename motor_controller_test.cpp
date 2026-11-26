@@ -54,6 +54,22 @@ TEST(BasicTests, canStartMotor) {
   EXPECT_FALSE(canStartMotor(false, true, false));
 }
 
+TEST(BasicTests, SetCommandValidatesSpeed) {
+  RecordProperty("cpptest_filename", __FILE__);
+
+  const uint16_t originalSpeed = MOTOR_SPEED;
+  EXPECT_EQ(processCommand("SET", "65535"), 65535);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+  EXPECT_EQ(processCommand("SET", ""), -1);
+  EXPECT_EQ(processCommand("SET", "invalid"), -1);
+  EXPECT_EQ(processCommand("SET", "12x"), -1);
+  EXPECT_EQ(processCommand("SET", "-1"), -1);
+  EXPECT_EQ(processCommand("SET", "65536"), -1);
+  EXPECT_EQ(processCommand("SET", "999999999999999999999999999999"), -1);
+  EXPECT_EQ(MOTOR_SPEED, 65535);
+  MOTOR_SPEED = originalSpeed;
+}
+
 TEST(BasicTests, ProcessorAddsDefaultControlToCommandResult) {
   RecordProperty("cpptest_filename", __FILE__);
 
