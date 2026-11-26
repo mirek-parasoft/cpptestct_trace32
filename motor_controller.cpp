@@ -65,7 +65,7 @@ int processor(const char* cmd, const char* arg)
 
 uint16_t computeStartupSpeed(bool usePreset, uint16_t presetSpeed)
 {
-    uint16_t startupSpeed;
+    uint16_t startupSpeed = 0;
     if (usePreset) {
         startupSpeed = presetSpeed;
     }
