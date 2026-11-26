@@ -39,3 +39,11 @@ TEST(BasicTests, SetMotorSpeedZero) {
 
   EXPECT_EQ(processCommand("SET", "0"), 0);
 }
+
+TEST(BasicTests, canStartMotor) {
+  RecordProperty("cpptest_filename", __FILE__);
+  RecordProperty("req", "REQ-123-POSITIVE");
+
+  EXPECT_TRUE(canStartMotor(true, true, false));
+  EXPECT_FALSE(canStartMotor(false, true, false));
+}

@@ -21,16 +21,23 @@ void setMotorSpeed(uint16_t speed)
     MOTOR_SPEED = speed;
 }
 
+bool canStartMotor(bool startRequested, bool guardClosed, bool faultActive)
+{
+    if (startRequested && guardClosed && !faultActive) {
+        return true;
+    }
+    return false;
+}
+
 int computeControl(int sensor, int divisor)
 {
     int value = 0;
-
     if (sensor > SENSOR_HIGH_THRESHOLD) {
-        return sensor / divisor;
+        value = sensor / divisor;
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
-        return sensor * MULTIPLIER;
+        value = sensor * MULTIPLIER;
     } else {
-        return DEFAULT_VALUE;
+        value = DEFAULT_VALUE;
     }
     return value;
 }
@@ -49,9 +56,18 @@ int processCommand(const char* cmd, const char* arg)
     return -1; 
 }
 
-int processor(char* cmd, char* arg)
+int processor(const char* cmd, const char* arg)
 {
     uint16_t sensor = readSensor();
     int control = computeControl(sensor, 0); 
     return processCommand(cmd, arg) + control;
+}
+
+uint16_t computeStartupSpeed(bool usePreset, uint16_t presetSpeed)
+{
+    uint16_t startupSpeed;
+    if (usePreset) {
+        startupSpeed = presetSpeed;
+    }
+    return startupSpeed;
 }

@@ -101,7 +101,7 @@ jobs:
         # input: .build/compile_commands.json
         # For Makefile-based projects, use a cpptestscan.bdf file as the input for analysis.
         input: .build/compile_commands.json
-        testConfig: "MISRA C++ 2023.properties"
+        testConfig: "MISRA and CERT - CI.properties"
         compilerConfig: gcc_14-aarch64
         additionalParams: -fail -exclude */syscalls.cpp -exclude */comm-plugin/* -exclude */google*/* -exclude *_test.cpp
         # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
