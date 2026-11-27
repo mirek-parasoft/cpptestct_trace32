@@ -11,6 +11,8 @@ RESET
 SYStEM.CPU CORTEXA32
 SYStEM.Up
 
+setup.api.rcl.enable /protocol tcp
+
 ;===========================================
 ; Load the test executable
 DATA.LOAD.Elf ".build/goo_test"
@@ -25,11 +27,11 @@ FDX.DISable
 FDX.METHOD BUFFERE
 
 FDX.OutChannel CoverageSendChannel
-FDX.write CoverageSendChannel "/home/mirek/parasoft/cpptest_ct_2026_2/examples/CovGoogleTest/.build/cpptest_results.clog" 2.
+FDX.write CoverageSendChannel ".build/cpptest-coverage/CovGoogleTest/CovGoogleTest.clog" 2.
 FDX.EnableChannel CoverageSendChannel 
 
 FDX.OutChannel TestsSendChannel
-FDX.write TestsSendChannel "/home/mirek/parasoft/cpptest_ct_2026_2/examples/CovGoogleTest/.build/gtest_results.xml" 1.
+FDX.write TestsSendChannel ".build/gtest_results.xml" 1.
 FDX.EnableChannel TestsSendChannel 
 
 ;===========================================

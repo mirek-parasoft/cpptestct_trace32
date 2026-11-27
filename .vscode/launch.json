@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "trace32",
+            "request": "launch",
+            "name": "TRACE32 Debug: Launch",
+            "port": 58870,
+            "trace32Target": "",
+            "trace32Port": 20000,
+            "trace32ConnectionScript": "",
+            "trace32SetupScript": "",
+            "trace32SetupScriptArgs": [],
+            "screen": true
+        },
+        {
+            "type": "trace32",
+            "request": "attach",
+            "name": "TRACE32 Debug: Attach",
+            "port": 58870,
+            "trace32Port": 20000
+        }
+    ]
+}

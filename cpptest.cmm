@@ -11,6 +11,8 @@ RESET
 SYStEM.CPU CORTEXA32
 SYStEM.Up
 
+setup.api.rcl.enable
+
 ;===========================================
 ; Load the test executable
 DATA.LOAD.Elf ".build/goo_test"
@@ -40,9 +42,7 @@ B.S _exit
 ; Run tests
 GO
 
-
 WAIT !run()
-
 ;===========================================
 ; Finalize fdx logging and exit
 FDX.CLOSE
